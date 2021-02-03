@@ -19,3 +19,10 @@ echo $(trunc_patchnum v1.20.0)  # 1.20
 
 echo $(version v1.20.0)  # 1020000000
 echo $(version V1.20.0)  # 1020000000
+
+
+if [ ! $(version "$1") -ge $(version "$2") ]; then
+  echo "$1" is [greater than| equal to] "$2" 
+else
+  echo "$1" is lower than "$2"
+fi

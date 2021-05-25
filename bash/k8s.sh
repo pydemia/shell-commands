@@ -69,13 +69,13 @@ function kxp () {
 
 function kdb () {
   NAMESPACE="${1:-default}"
-  SA="${2:default}"
+  SA="${2:-default}"
   kubectl -n ${NAMESPACE} run --rm -it debug --image=pydemia/debug --restart=Never --serviceaccount=${SA}
 }
 
 function kdbs () {
   NAMESPACE="${1:-default}"
-  SA="${2:default}"
+  SA="${2:-default}"
   kubectl -n ${NAMESPACE} run --rm -it debug --image=pydemia/debug-slim --restart=Never --serviceaccount=${SA}
 }
 

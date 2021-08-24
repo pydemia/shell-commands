@@ -29,7 +29,10 @@ alias k="kubectl"
 
 alias kme="kubectl config current-context;kubectl cluster-info"
 
-function kns () { kubectl config set-context --current --namespace="$1" }
+function kns () {
+  NAMESPACE="${1:-default}"
+  kubectl config set-context --current --namespace="${NAMESPACE}"
+}
 
 # "kubectl -n istio-system get gw ingress-prd -o jsonpath='{.metadata.annotations.kubectl\.kubernetes\.io/last-applied-configuration}' | yq -y"
 function kexec () {
@@ -82,6 +85,26 @@ function kdbs () {
 
 
 "kubectl get svc -n airuntime -o jsonpath='{range .items[*]}{.metadata.name}{"\t\t"}{.spec.ports}{"\n"}{end}'"
+
+
+# ===========================================
+function isvclog () {
+  NAMESPACE="${1:-default}"
+  ISVC_NM="$2"
+  COMPONENT="${3:-predictor}"
+  DEPLOY_TYPE="${4:-default}"
+  CONTAINER_NM="${5:-kfserving-container}"
+
+  if [[ -z $ISVC_NM ]]; then
+    echo "inferenceservice '-i' is not given."
+    exit 1
+  else
+    echo "$ISVC_NM in $NAMESPACE"
+    kubectl -n ${NAMESPACE} logs "$(kubectl -n ${NAMESPACE} get pods -l=serving.kubeflow.org/inferenceservice=${ISVC_NM},component=${COMPONENT},service.istio.io/canonical-name=${ISVC_NM}-${COMPONENT}-${DEPLOY_TYPE} -o=jsonpath='{.items[0].metadata.name}')" -c ${CONTAINER_NM}
+  fi
+
+}
+# ===========================================
 
 # ==============================================================================================================
 # ==============================================================================================================

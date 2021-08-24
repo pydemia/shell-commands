@@ -5,13 +5,13 @@
 # ==============================================================================================================
 
 # Proxy Certificate Setting
-alias k-certdata="kubectl config set "clusters.$(kubectl config current-context).certificate-authority-data" "$(cat $HOME/.ssl/my.crt|base64 -i -)""
+#alias k-certdata="kubectl config set "clusters.$(kubectl config current-context).certificate-authority-data" "$(cat $HOME/.ssl/my.crt|base64 -i -)""
 
 # Unused: See this message:
 # error: certificate-authority-data and certificate-authority are both specified for $CLUSTER_NAME. certificate-authority-data will override.
 #alias k-cert="kubectl config set "clusters.$(kubectl config current-context).certificate-authority" $HOME/.ssl/my.crt"
-alias kc="k-certdata"
-kc
+#alias kc="k-certdata"
+#kc
 
 alias kv="kubectl --insecure-skip-tls-verify"
 
@@ -21,7 +21,8 @@ export PATH=$PATH:$HOME/.istioctl/bin
 
 #alias k9v="k9s --insecure-skip-tls-verify"
 #complete -F __start_kubectl k
-source <(kubectl completion zsh)
+#source <(kubectl completion zsh)
+source <(kubectl completion bash)
 
 alias k="kubectl"
 #alias kk="kubectl --insecure-skip-tls-verify"

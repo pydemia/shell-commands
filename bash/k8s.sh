@@ -106,9 +106,10 @@ function isvclog () {
 
 }
 # ===========================================
-function delete_po () {                                                         
-  POD_NAME="$1"                                                                 
-  kubectl -n corus delete po $POD_NAME --force --grace-period=0                    
+function delete_po () {
+  NAMESPACE="${2:-default}"
+  POD_NAME="$1"
+  kubectl -n $NAMESPACE delete po $POD_NAME --force --grace-period=0
 }
 # ==============================================================================================================
 # ==============================================================================================================

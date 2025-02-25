@@ -31,10 +31,11 @@ $ find . -name "0*" | xargs sed -n p > merged.txt
 """
 
 
-# ./concat-text.py -d books_medical -f "MPA*.txt" -t books_medical_concat -p "MPA" -s 300
+# ./concat-text.py -d books_medical -f "MPA*.txt" -t books_medical_concat -p "MPA" -s 200
 # ./concat-text.py -d books_medical -f "MTB*.txt" -t books_medical_concat -p "MTB" -s 300
-# ./concat-text.py -d books_legal -f "LJU*.txt" -t books_legal_concat -p "LJU" -s 200
+# ./concat-text.py -d books_legal -f "LJU*.txt" -t books_legal_concat -p "LJU" -s 100
 # ./concat-text.py -d books_legal -f "LTB*.txt" -t books_legal_concat -p "LTB" -s 300
+
 
 # text_files = glob.glob("./[0-1]*.txt")
 

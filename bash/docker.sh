@@ -18,10 +18,59 @@ function docker_filter() {
 }
 
 function docker_get_images() {
-  if [ -z "${1}" ]; then
-    docker images | awk '$1 { print $1":"$2 }'
+  # docker_get_images -n busybox -t latest -u
+  local pattern tag uniqueid=false
+  while [[ ${1} ]]; do
+      case "${1}" in
+          --name | -n)
+              name=${2}
+              shift
+              ;;
+          --tag | -t)
+              tag=${2}
+              shift
+              ;;
+          --unique | -u)
+              uniqueid=true
+              ;;
+          *)
+              echo "Unknown parameter: ${1}" >&2
+              return 1
+      esac
+      shift
+
+      # if ! shift; then
+      #     echo 'Missing parameter argument.' >&2
+      #     return 1
+      # fi
+  done
+  if [ -z "${name}" ]; then
+    if [ -z "${tag}" ]; then
+      if [[ "${uniqueid}" == "true" ]]; then
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk '{ print $1 }' | sort -u
+      else
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk '{ print $1"\t"$2":"$3 }'
+      fi
+    else
+      if [[ "${uniqueid}" == "true" ]]; then
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk -v tag_pattern="$tag" '$3 ~ tag_pattern { print $1 }' | sort -u
+      else
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk -v tag_pattern="$tag" '$3 ~ tag_pattern { print $1"\t"$2":"$3 }'
+      fi
+    fi
   else
-    PATTERN="${1}"
-    docker images | awk -v pattern="$PATTERN" '$1 ~ pattern { print $1":"$2 }'
+    if [ -z "${tag}" ]; then
+      if [[ "${uniqueid}" == "true" ]]; then
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk -v name_pattern="$name" '$2 ~ name_pattern { print $1 }' | sort -u
+      else
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk -v name_pattern="$name" '$2 ~ name_pattern { print $1"\t"$2":"$3 }'
+      fi
+    else
+      if [ "${uniqueid}" == "true" ]; then
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk -v name_pattern="$name" -v tag_pattern="$tag" '$2 ~ name_pattern && $3 ~ tag_pattern { print $1 }' | sort -u
+      else
+        docker images --format "{{.ID}}\t{{.Repository}}\t{{.Tag}}" | awk -v name_pattern="$name" -v tag_pattern="$tag" '$2 ~ name_pattern && $3 ~ tag_pattern { print $1"\t"$2":"$3 }'
+      fi
+    fi
   fi
 }

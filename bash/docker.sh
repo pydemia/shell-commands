@@ -5,6 +5,8 @@ alias docker_rm_after_build='docker images -f "dangling=true" -q'
 alias docker_rm_untagged='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_images='docker rmi $(docker images -a --filter=dangling=true -q)'
 alias docker_clean_ps='docker rm $(docker ps --filter=status=exited --filter=status=created -q)'
+alias docker_clean_build_cache='docker builder prune -a'
+#alias docker_clean_system_all='docker system prune -a --volumes'
 
 #docker images | awk '$1 { print $1":"$2 }'
 alias docker_ls='docker images | awk '\''$1 { print $1":"$2 }'\'''

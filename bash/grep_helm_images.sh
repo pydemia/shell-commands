@@ -12,36 +12,55 @@
 # helm list-images ./istio-cni -f ./values_istio-cni.yaml
 # helm list-images ./istio-istiod -f ./values_istio-istiod.yaml
 # helm list-images ./istio-gateway -f ./values_istio-gateway.yaml
-
 # helm list-images ./fluent-bit -f ./values_fluent-bit.yaml
-
 # helm list-images ./argo-cd -f ./values_argo-cd.yaml
-
 
 
 # helm template .
 
 # helm list-images ./fluent-bit --yaml
-
 # helm template ./fluent-bit | grep 'image:'
-
 # helm template ./fluent-bit | grep 'image:' | sed -E 's|^[ \t]*(image: )"?([^"]*)"?|\2|g'
-
-
 # helm template ./kserve-crd | grep 'image: ' | sed -E 's|^[ \t]*(image: )"?([^"]*)"?|\2|g'
 
-rm -rf images.txt
 
+#!/bin/bash
+
+# 1. Get a list of all images in helm
+echo '1. Get a list of all images in helm [images.txt]...'
+rm -rf images.txt
 for repo in $(find . -maxdepth 1 -type d); do
     if [[ $repo != "." ]]; then
         repo_name="$(echo $repo | sed -E 's|\.\/||g')"
         echo "# $repo" >> images.txt
-        # helm template $repo -f "./values_$repo_name.yaml"  2>> images.txt | grep 'image: ' | sed -E 's|^[ \t]*(image: )"?([^"]*)"?|\2|g' >> images.txt
         helm template $repo -f "./values_$repo_name.yaml" | grep 'image: ' | sed -E 's|^[ \t]*(image: )"?([^"]*)"?|\2|g' >> images.txt
     fi
 done
 
-yq -r '.defaults.global.proxy.image' ./values_istio-istiod.yaml >> images.txt
+# 2. Add an image manually: istio proxy
+echo '2. Add an image manually: istio proxy...'
+echo "istio/$(yq -r '.defaults.global.proxy.image' ./values_istio-istiod.yaml)" >> images.txt
+echo "istio/$(yq -r '.defaults.global.proxy_init.image' ./values_istio-istiod.yaml)" >> images.txt
 
-sed -r -e 's|^([^# ][^:]*):(.*)|\1:\2|' -e 's|^([^# ][^:]*)$|\1:latest|' -e 's|(^#.*)||g' images.txt | sort -u - > images_unique.txt
+# 3. Add a "latest" tag to untagged image
+# & Get unique images list
+# & Remove comments
+# & Remove invalid lines
+# & Remove trailing whitespaces
+#Remove invalid lines
+# ex.)
+# {{ .ProxyImage }}:latest
+# {{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}:latest
+# {{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy_init.image }}:latest
+echo '3. Processing images list [images_unique.txt]...'
+sed -r \
+    -e 's|^([^# ][^:]*):(.*)|\1:\2|' \
+    -e 's|^([^# ][^:]*)$|\1:latest|' \
+    -e 's|(^#.*)||g' \
+    -e 's|[[:space:]]*$||' \
+    -e 's|^\{(.*)||g' \
+    -e '/^$/d' \
+    images.txt \
+| sort -u > images_unique.txt
 
+echo 'all done! '

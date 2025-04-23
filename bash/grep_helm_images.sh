@@ -76,6 +76,7 @@ sed -r \
     -e 's|^\{(.*)||g' \
     -e '/^$/d' \
     images.txt \
-| sort -u > images_unique.txt
+| sort -u | sort -h > images_unique.txt
+
 
 echo 'all done! '

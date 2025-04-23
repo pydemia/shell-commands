@@ -29,11 +29,26 @@
 # 1. Get a list of all images in helm
 echo '1. Get a list of all images in helm [images.txt]...'
 rm -rf images.txt
-for repo in $(find . -maxdepth 1 -type d); do
+# for repo in $(find . -maxdepth 1 -type d); do
+#     if [[ $repo != "." ]]; then
+#         repo_name="$(echo $repo | sed -E 's|\.\/||g')"
+#         echo "# $repo" >> images.txt
+#         helm template $repo -f "./values_$repo_name.yaml" | grep 'image: ' | sed -E 's|^[ \t]*(image: )"?([^"]*)"?|\2|g' >> images.txt
+#     fi
+# done
+
+line='----------------------------------------'
+repos=($(find . -maxdepth 1 -type d | sort -h))
+length=${#repos[@]}
+for i in ${!repos[@]}; do
+    repo=${repos[i]}
     if [[ $repo != "." ]]; then
         repo_name="$(echo $repo | sed -E 's|\.\/||g')"
-        echo "# $repo" >> images.txt
-        helm template $repo -f "./values_$repo_name.yaml" | grep 'image: ' | sed -E 's|^[ \t]*(image: )"?([^"]*)"?|\2|g' >> images.txt
+        printf "%s %s [%+2s/%+2s]\n" "$repo" "${line:${#repo}}" $i $length
+        # printf "%-${linewidth}s |\n" "a = $a and b = $b"
+        printf "%s %s [%+2s/%+2s]\n" "# $repo" "${line:${#repo}}" $i $length >> images.txt
+        helm template --include-crds $repo -f "./values_$repo_name.yaml" | grep 'image: ' | sed -E 's|[[:space:]]*[^[:space:]]*(image: )"?([^"]*)"?|\2|g' | sort -u >> images.txt
+        printf "# %s\n\n" $line >> images.txt
     fi
 done
 

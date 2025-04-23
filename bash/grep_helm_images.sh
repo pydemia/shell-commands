@@ -52,10 +52,14 @@ for i in ${!repos[@]}; do
     fi
 done
 
+
 # 2. Add an image manually: istio proxy
 echo '2. Add an image manually: istio proxy...'
+# See: https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/#customizing-injection
+sed -i -e 's|auto||g' images.txt
 echo "istio/$(yq -r '.defaults.global.proxy.image' ./values_istio-istiod.yaml)" >> images.txt
 echo "istio/$(yq -r '.defaults.global.proxy_init.image' ./values_istio-istiod.yaml)" >> images.txt
+
 
 # 3. Add a "latest" tag to untagged image
 # & Get unique images list

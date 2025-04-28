@@ -78,10 +78,10 @@ while [[ ${1} ]]; do
     case "${1}" in
         --help | -h)
             printf "[Usage]\n"
-            printf "./concat_kubeconfig.sh merge_kubeconfig <kubeconfig1> <kubeconfig2>\n\n"
+            printf "./merge_kubeconfig.sh merge_kubeconfig <kubeconfig1> <kubeconfig2>\n\n"
             printf "The name of new cluster will be replace with filename, ignoring ext if exists."
             printf "[Example]\n"
-            printf "$ ./concat_kubeconfig.sh merge_kubeconfig ~/.kube/config_new\n"
+            printf "$ ./merge_kubeconfig.sh merge_kubeconfig ~/.kube/config_new\n"
             printf "...\n"
             printf "  cluster: config_new\n"
             printf "  user: config_new-user\n"

@@ -120,7 +120,7 @@ function save_with_docker() {
     local filename=$(imagetag_to_filename "$image").tar.gz
     echo "⌛ Saving image: $image -> $filename"
     docker save "$image" | gzip > "$filename"
-    filesize="$(ls -lh aip-harbor.sktai.io--sktai--agent--agents_backend__v1.0.0.tar.gz | awk '{print $5}')"
+    filesize="$(ls -lh $filename | awk '{print $5}')"
     echo "✅ Image saved to $filename (size: $filesize)"
 }
 

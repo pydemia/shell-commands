@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://docker-docs.uclv.cu/registry/spec/api/
+
 handle_interrupt() {
     echo "Interrupt received. Cleaning up..."
     # Add cleanup actions here, e.g., deleting temp files, closing connections

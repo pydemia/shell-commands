@@ -77,3 +77,25 @@ function docker_get_images() {
     fi
   fi
 }
+
+function docker_check_image_exists() {
+    local image="$1"
+    local arch
+    arch="$(docker image inspect --format '{{.Os}}/{{.Architecture}}') $image"
+    
+    # docker image inspect --format '{{.Os}}/{{.Architecture}}' busybox
+}
+# docker image inspect --format '{{.Os}}/{{.Architecture}}' busybox
+
+function imagetag_to_filename() {
+    local image="$1"
+    # Replace '/' with '--' and ':' with '-'
+    echo "$image" | sed -E 's|/|--|g; s|:|__|g'
+}
+
+
+function filename_to_imagetag() {
+    local filename="$1"
+    # Replace '--' with '/' and '__' with ':'
+    echo "$filename" | sed -E 's|--|/|g; s|__|:|g'
+}

@@ -82,12 +82,12 @@ function docker_check_image_exists() {
     local image="$1"
     local target_arch="${2:-linux/amd64}"
     local arch
-    arch="$(docker image inspect --format '{{.Os}}/{{.Architecture}}') $image"
+    arch="$(docker image inspect $image --format '{{.Os}}/{{.Architecture}}')"
     if [[ $arch == *"$target_arch"* ]]; then
-        echo "Image $image exists for architecture $target_arch."
+        echo "Image $image exists for architecture [$target_arch]"
         return 0
     else
-        echo "Image $image does not exist for architecture $target_arch."
+        echo "Not Found: Image $image does not exist for architecture [$target_arch]"
         return 1
     fi
 }
